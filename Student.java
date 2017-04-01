@@ -83,8 +83,8 @@ public class Student {
     }
     
     // Method to compute the average
-    public void computeAverage(Student student){
-        double avg = (student.grade1 + student.grade2 + student.grade3) / 3.0;
+    public void computeAverage(Student student, int numGrades){
+        double avg = (student.grade1 + student.grade2 + student.grade3) / numGrades;
         this.average = avg;
     }
     
