@@ -10,7 +10,9 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 import java.io.*;
-import java.lang.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  *
@@ -145,27 +147,51 @@ public class StudentList {
     
     public void saveStudentsToDB(){
         // Create a new instance of a file chooser
-        JFileChooser chooser = new JFileChooser();
+        JFileChooser dbChooser = new JFileChooser();
         
         // Allow user to select only .txt files
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Select Only (.myd) files: ", "myd");
-        chooser.setFileFilter(filter);
+        dbChooser.setFileFilter(filter);
         
         // Display chooser dialog menu
-        int returnVal = chooser.showOpenDialog(null);
+        int returnVal = dbChooser.showOpenDialog(null);
         
         // Notify the user of the selected file & parse the file
         if(returnVal == JFileChooser.APPROVE_OPTION){
             // Store path to file
-            String path = chooser.getSelectedFile().getPath();
+            String path = dbChooser.getSelectedFile().getPath();
             
-            // Store filename
+            // Store filename use file to write to disk
             File file = new File(path);
             
             // Notify user of selected file
             System.out.println("You have chosen to write data to the following DB: " + file.toString());
             
             // Start writing data to tables!!!!
+            
+            
+            Connection conn = null;
+            
+            //Class.forName("com.mysql.jdbc.Driver").newInstance();
+            
+            try {
+                conn =
+                   DriverManager.getConnection("jdbc:mysql://localhost/test?" +
+                                               "user=minty&password=greatsqldb");
+
+                // Do something with the Connection
+                // ...
+                
+                
+            } catch (SQLException ex) {
+                // handle any errors
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+            }
+            
+            
+            
             
         }
     }

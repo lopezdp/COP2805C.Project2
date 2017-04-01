@@ -107,7 +107,7 @@ public class Student {
             this.letterGrade = 'C';
         }else if(this.getAverage() >= 60 && this.getAverage() < 70){
             this.letterGrade = 'D';
-        } else{
+        }else{
             this.letterGrade = 'F';
         }
     }   
