@@ -28,6 +28,7 @@ public class StudentList {
     
     // method that prompts the user for an input file name
     // and it reads the contents of the input file into students
+    // Assume students have between 0 & 3 grades
     // Expected File Input:
     // FirstName | LastName | Grade1 | Grade2
     // FirstName | LastName | Grade1 | Grade2 | Grade3
@@ -70,7 +71,6 @@ public class StudentList {
             while(input.hasNext()){
                 String line = input.nextLine();
                 String[] lineArr = line.split("\\|");
-                
                 
                 if(lineArr.length == 5){
                     firstName = lineArr[0];
@@ -139,7 +139,33 @@ public class StudentList {
                 System.out.println("status: " + this.students.get(studentElement - 1).getStatus());
                 System.out.println("letterGrade: " + this.students.get(studentElement - 1).getLetterGrade());
                 
-            }
+            }  
+        }
+    }
+    
+    public void saveStudentsToDB(){
+        // Create a new instance of a file chooser
+        JFileChooser chooser = new JFileChooser();
+        
+        // Allow user to select only .txt files
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Select Only (.myd) files: ", "myd");
+        chooser.setFileFilter(filter);
+        
+        // Display chooser dialog menu
+        int returnVal = chooser.showOpenDialog(null);
+        
+        // Notify the user of the selected file & parse the file
+        if(returnVal == JFileChooser.APPROVE_OPTION){
+            // Store path to file
+            String path = chooser.getSelectedFile().getPath();
+            
+            // Store filename
+            File file = new File(path);
+            
+            // Notify user of selected file
+            System.out.println("You have chosen to write data to the following DB: " + file.toString());
+            
+            // Start writing data to tables!!!!
             
         }
     }
