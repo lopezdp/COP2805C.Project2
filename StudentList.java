@@ -150,7 +150,7 @@ public class StudentList {
         JFileChooser dbChooser = new JFileChooser();
         
         // Allow user to select only .txt files
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Select Only (.myd) files: ", "myd");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Select Only (.sql) files: ", "sql");
         dbChooser.setFileFilter(filter);
         
         // Display chooser dialog menu
@@ -168,16 +168,16 @@ public class StudentList {
             System.out.println("You have chosen to write data to the following DB: " + file.toString());
             
             // Start writing data to tables!!!!
-            
-            
             Connection conn = null;
             
             //Class.forName("com.mysql.jdbc.Driver").newInstance();
             
             try {
+                String user = "root";
+                String pw = "root";
+                String url = "jdbc:mysql://localhost:3306/sakila";
                 conn =
-                   DriverManager.getConnection("jdbc:mysql://localhost/test?" +
-                                               "user=minty&password=greatsqldb");
+                   DriverManager.getConnection(user, pw, url);
 
                 // Do something with the Connection
                 // ...
