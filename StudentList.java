@@ -13,6 +13,8 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -176,8 +178,12 @@ public class StudentList {
                 String user = "root";
                 String pw = "root";
                 String url = "jdbc:mysql://localhost:3306/sakila";
+                
+                Class.forName("com.mysql.jdbc.Driver");
                 conn =
                    DriverManager.getConnection(user, pw, url);
+                
+                System.out.println("Database Connection Established");
 
                 // Do something with the Connection
                 // ...
@@ -188,6 +194,8 @@ public class StudentList {
                 System.out.println("SQLException: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("VendorError: " + ex.getErrorCode());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
             }
             
             
