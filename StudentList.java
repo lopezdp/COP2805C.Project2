@@ -13,6 +13,7 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -134,6 +135,7 @@ public class StudentList {
 
                 }
                 
+                // Tracer rounds
                 System.out.println("firstName: " + this.students.get(studentElement - 1).getFirstName());
                 System.out.println("lastName: " + this.students.get(studentElement - 1).getLastName());
                 System.out.println("grade1: " + this.students.get(studentElement - 1).getGrade1());
@@ -148,6 +150,48 @@ public class StudentList {
     }
     
     public void saveStudentsToDB(){
+        // Start writing data to tables!!!!
+            
+            
+            try {
+                // Declare variables & save login credentials
+                String user = "root";
+                String pw = "root";
+                String dbName = "Grades";
+                String url = "jdbc:mysql://localhost:3306/";
+                
+                // Load JDBC connection drivers
+                Class.forName("com.mysql.jdbc.Driver").newInstance();
+                System.out.println("Driver Loaded...");
+                
+                // Establish a connection
+                Connection conn =
+                   DriverManager.getConnection(url, user, pw);
+                System.out.println("Database Connection Established...");
+
+                // Do something with the Connection
+                // ...
+                // Create Statements
+                Statement s = conn.createStatement();
+                
+                // Execute a Statement & Create DB if it does not exist
+                int myResult = s.executeUpdate("CREATE DATABASE IF NOT EXISTS " + dbName);
+                System.out.println(dbName + " DB Created Successfully.");
+                System.out.println(myResult);
+                
+                
+            } catch (SQLException ex) {
+                // handle any errors
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("SEVERE ERROR: " + Arrays.toString(ex.getStackTrace()));
+            } catch (InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
         // Create a new instance of a file chooser
         JFileChooser dbChooser = new JFileChooser();
         
@@ -169,34 +213,7 @@ public class StudentList {
             // Notify user of selected file
             System.out.println("You have chosen to write data to the following DB: " + file.toString());
             
-            // Start writing data to tables!!!!
-            Connection conn = null;
             
-            //Class.forName("com.mysql.jdbc.Driver").newInstance();
-            
-            try {
-                String user = "root";
-                String pw = "root";
-                String url = "jdbc:mysql://localhost:3306/sakila";
-                
-                Class.forName("com.mysql.jdbc.Driver");
-                conn =
-                   DriverManager.getConnection(user, pw, url);
-                
-                System.out.println("Database Connection Established");
-
-                // Do something with the Connection
-                // ...
-                
-                
-            } catch (SQLException ex) {
-                // handle any errors
-                System.out.println("SQLException: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("VendorError: " + ex.getErrorCode());
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
-            }
             
             
             
