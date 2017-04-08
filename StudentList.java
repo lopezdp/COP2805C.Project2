@@ -150,75 +150,110 @@ public class StudentList {
     }
     
     public void saveStudentsToDB(){
-        // Start writing data to tables!!!!
-            
-            
-            try {
-                // Declare variables & save login credentials
-                String user = "root";
-                String pw = "root";
-                String dbName = "Grades";
-                String url = "jdbc:mysql://localhost:3306/";
-                
-                // Load JDBC connection drivers
-                Class.forName("com.mysql.jdbc.Driver").newInstance();
-                System.out.println("Driver Loaded...");
-                
-                // Establish a connection
-                Connection conn =
-                   DriverManager.getConnection(url, user, pw);
-                System.out.println("Database Connection Established...");
+        // Start writing data to db!!!!
+        
+        try {
+            // Declare variables & save login credentials
+            String user = "root";
+            String pw = "root";
+            String dbName = "Grades";
+            String url = "jdbc:mysql://localhost:3306/";
 
-                // Do something with the Connection
-                // ...
-                // Create Statements
-                Statement s = conn.createStatement();
-                
-                // Execute a Statement & Create DB if it does not exist
-                int myResult = s.executeUpdate("CREATE DATABASE IF NOT EXISTS " + dbName);
-                System.out.println(dbName + " DB Created Successfully.");
-                System.out.println(myResult);
-                
-                
-            } catch (SQLException ex) {
-                // handle any errors
-                System.out.println("SQLException: " + ex.getMessage());
-                System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("VendorError: " + ex.getErrorCode());
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("SEVERE ERROR: " + Arrays.toString(ex.getStackTrace()));
-            } catch (InstantiationException | IllegalAccessException ex) {
-                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+            // Load JDBC connection drivers
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            System.out.println("Driver Loaded...");
+
+            // Establish a connection
+            Connection conn =
+               DriverManager.getConnection(url, user, pw);
+            System.out.println("Database Connection Established...");
+
+            // Do something with the Connection
+            // Create Statements
+            Statement s = conn.createStatement();
+
+            // Execute a Statement & Create DB if it does not exist
+            int myResult = s.executeUpdate("DROP DATABASE IF EXISTS " + dbName);
+            System.out.println("db dropped? " + myResult);
+            myResult = s.executeUpdate("CREATE DATABASE IF NOT EXISTS " + dbName);
+            System.out.println(dbName + " DB Created Successfully.");
+            System.out.println("result: " + myResult);
+            
+            // reset conn to Connect to dbName database
+            System.out.println("Connecting to " + dbName + " database...");
+            conn =
+               DriverManager.getConnection(url + dbName, user, pw);
+            // prepare to Create db tables & schema in selected db
+            s = conn.createStatement();
+            System.out.println("Creating tables in " + dbName);
+            // Declare variable to store sql statement to execute
+            String sqlCreateTableSchema = "CREATE TABLE StudentsTbl " +
+                    "(id INTEGER not NULL, " +
+                    "FirstName VARCHAR(255), " +
+                    "LastName VARCHAR(255), " +
+                    "Grade1 DOUBLE, " +
+                    "Grade2 DOUBLE, " +
+                    "Grade3 DOUBLE, " +
+                    "Average DOUBLE, " +
+                    "Status VARCHAR(255), " +
+                    "LetterGrade VARCHAR(1), " +
+                    "PRIMARY KEY (id))";
+            // Execute required statements to create tables
+            myResult = s.executeUpdate(sqlCreateTableSchema);
+            System.out.println("Tables created in " + dbName);
+            System.out.println("Result: " + myResult);
+            
+            int count = 1;
+            
+            for(Student student : this.students){
+                myResult = s.executeUpdate("INSERT INTO StudentsTbl " +
+                        "VALUES ( " + count++ + ", " + 
+                        "'" + student.getFirstName() + "', " +
+                        "'" + student.getLastName() + "', " +
+                        student.getGrade1() + ", " +
+                        student.getGrade2() + ", " +
+                        student.getGrade3() + ", " +
+                        student.getAverage() + ", " +
+                        "'" + student.getStatus() + "', " +
+                        "'" + student.getLetterGrade() + "')"
+                        );
+                System.out.println("student" + (count - 1) + " entered: " + myResult);
             }
-        
-        // Create a new instance of a file chooser
-        JFileChooser dbChooser = new JFileChooser();
-        
-        // Allow user to select only .txt files
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Select Only (.sql) files: ", "sql");
-        dbChooser.setFileFilter(filter);
-        
-        // Display chooser dialog menu
-        int returnVal = dbChooser.showOpenDialog(null);
-        
-        // Notify the user of the selected file & parse the file
-        if(returnVal == JFileChooser.APPROVE_OPTION){
-            // Store path to file
-            String path = dbChooser.getSelectedFile().getPath();
-            
-            // Store filename use file to write to disk
-            File file = new File(path);
-            
-            // Notify user of selected file
-            System.out.println("You have chosen to write data to the following DB: " + file.toString());
+            System.out.println("Records entered into Students Table Successfully...");
             
             
             
             
-            
-            
+
+
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("SEVERE ERROR: " + Arrays.toString(ex.getStackTrace()));
+        } catch (InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        //
+        
     }
+    
+    public void findStudent(){
+        
+    }
+    
+    public void writeStudents(){
+        
+    }
+    
+    public void writeSortedStudents(){
+        
+    }
+    
+    
     
 }
