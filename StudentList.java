@@ -12,6 +12,7 @@ import javax.swing.filechooser.*;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -74,6 +75,9 @@ public class StudentList {
             
             // Loop through file contents and save each object as an element in ArrayList
             while(input.hasNext()){
+                
+                // store contents of line and split contents into 
+                // array at delimiter \|
                 String line = input.nextLine();
                 String[] lineArr = line.split("\\|");
                 
@@ -132,25 +136,15 @@ public class StudentList {
                     this.students.add(new Student(firstName, lastName));
                     
                     studentElement++;
-
                 }
-                
-                // Tracer rounds
-                System.out.println("firstName: " + this.students.get(studentElement - 1).getFirstName());
-                System.out.println("lastName: " + this.students.get(studentElement - 1).getLastName());
-                System.out.println("grade1: " + this.students.get(studentElement - 1).getGrade1());
-                System.out.println("grade2: " + this.students.get(studentElement - 1).getGrade2());
-                System.out.println("grade3: " + this.students.get(studentElement - 1).getGrade3());
-                System.out.println("average: " + this.students.get(studentElement - 1).getAverage());
-                System.out.println("status: " + this.students.get(studentElement - 1).getStatus());
-                System.out.println("letterGrade: " + this.students.get(studentElement - 1).getLetterGrade());
-                
-            }  
+            }
+            // Confirmation that data has been read from file and is now ready to be stored into db
+            System.out.println("Contents of file are ready to be saved to database.");
         }
     }
     
     public void saveStudentsToDB(){
-        // Start writing data to db!!!!
+        // Start writing data in students array to db!!!!
         
         try {
             // Declare variables & save login credentials
@@ -177,7 +171,7 @@ public class StudentList {
             System.out.println("db dropped? " + myResult);
             myResult = s.executeUpdate("CREATE DATABASE IF NOT EXISTS " + dbName);
             System.out.println(dbName + " DB Created Successfully.");
-            System.out.println("result: " + myResult);
+            System.out.println("db created?: " + myResult);
             
             // reset conn to Connect to dbName database
             System.out.println("Connecting to " + dbName + " database...");
@@ -199,12 +193,13 @@ public class StudentList {
                     "LetterGrade VARCHAR(1), " +
                     "PRIMARY KEY (id))";
             // Execute required statements to create tables
-            myResult = s.executeUpdate(sqlCreateTableSchema);
+            s.executeUpdate(sqlCreateTableSchema);
             System.out.println("Tables created in " + dbName);
-            System.out.println("Result: " + myResult);
             
             int count = 1;
             
+            // loop through each element in students array 
+            // and insert data into students table
             for(Student student : this.students){
                 myResult = s.executeUpdate("INSERT INTO StudentsTbl " +
                         "VALUES ( " + count++ + ", " + 
@@ -217,15 +212,13 @@ public class StudentList {
                         "'" + student.getStatus() + "', " +
                         "'" + student.getLetterGrade() + "')"
                         );
-                System.out.println("student" + (count - 1) + " entered: " + myResult);
+                System.out.println("student" + (count - 1) + " records entered: " + myResult);
             }
             System.out.println("Records entered into Students Table Successfully...");
             
+            // Close connection to DB
+            conn.close();
             
-            
-            
-
-
         } catch (SQLException ex) {
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
@@ -237,9 +230,6 @@ public class StudentList {
         } catch (InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        //
-        
     }
     
     public void findStudent(){
