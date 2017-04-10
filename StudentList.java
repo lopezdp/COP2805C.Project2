@@ -218,7 +218,6 @@ public class StudentList {
             
             // Close connection to DB
             conn.close();
-            
         } catch (SQLException ex) {
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
@@ -233,6 +232,21 @@ public class StudentList {
     }
     
     public void findStudent(){
+        // Prompt User for Student Name (Last, First)
+        // Show message indicating if student found in db
+        // Use JOptionPane with text fields & OK & Cancel Buttons
+        //  Continue asking the user until user presses cancel
+        
+        // Declare variable to store name entered
+        String name = " ";
+        
+        // create event loop to keep asking user for a name
+        while(name != null){
+            // create an instance of JOptionPane to accept user input
+            name = JOptionPane.showInputDialog(null, "Enter First & Last Name of Student to Find.", "Find Student in DB", JOptionPane.QUESTION_MESSAGE);
+            System.out.println("name entered: " + name);
+        }
+        
         
     }
     
