@@ -239,12 +239,37 @@ public class StudentList {
         
         // Declare variable to store name entered
         String name = " ";
+        String [] n = new String[2];
+        String first = "";
+        String last = "";
+        
         
         // create event loop to keep asking user for a name
         while(name != null){
             // create an instance of JOptionPane to accept user input
             name = JOptionPane.showInputDialog(null, "Enter First & Last Name of Student to Find.", "Find Student in DB", JOptionPane.QUESTION_MESSAGE);
             System.out.println("name entered: " + name);
+            
+            // Parse input and find first & last name
+            if(name != null){
+                n = name.split("\\s");
+                first = n[0];
+                last = n[1];
+            }
+            else if(name == null){
+                n = null;
+                first = null;
+                last = null;
+            }
+            
+            // tracer rounds
+            System.out.println("array n: " + Arrays.toString(n));
+            System.out.println("first name arr: " + first);
+            System.out.println("last name arr: " + last);
+            
+            
+            
+            
         }
         
         
