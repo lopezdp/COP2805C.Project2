@@ -25,7 +25,14 @@ import java.util.logging.Logger;
 public class StudentList {
     
     // Declare fields & variables
-    List<Student> students;
+    // Declare variables & save login credentials
+    private final String user = "root";
+    private final String pw = "root";
+    private final String dbName = "Grades";
+    private final String url = "jdbc:mysql://localhost:3306/";
+    private final String driver = "com.mysql.jdbc.Driver";
+    private ResultSet resultSet;
+    private List<Student> students;
     
     // Constructor
     public StudentList(){
@@ -145,21 +152,14 @@ public class StudentList {
     
     public void saveStudentsToDB(){
         // Start writing data in students array to db!!!!
-        
         try {
-            // Declare variables & save login credentials
-            String user = "root";
-            String pw = "root";
-            String dbName = "Grades";
-            String url = "jdbc:mysql://localhost:3306/";
-
             // Load JDBC connection drivers
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Class.forName(this.driver).newInstance();
             System.out.println("Driver Loaded...");
 
             // Establish a connection
             Connection conn =
-               DriverManager.getConnection(url, user, pw);
+               DriverManager.getConnection(this.url, this.user, this.pw);
             System.out.println("Database Connection Established...");
 
             // Do something with the Connection
@@ -167,19 +167,19 @@ public class StudentList {
             Statement s = conn.createStatement();
 
             // Execute a Statement & Create DB if it does not exist
-            int myResult = s.executeUpdate("DROP DATABASE IF EXISTS " + dbName);
+            int myResult = s.executeUpdate("DROP DATABASE IF EXISTS " + this.dbName);
             System.out.println("db dropped? " + myResult);
-            myResult = s.executeUpdate("CREATE DATABASE IF NOT EXISTS " + dbName);
-            System.out.println(dbName + " DB Created Successfully.");
+            myResult = s.executeUpdate("CREATE DATABASE IF NOT EXISTS " + this.dbName);
+            System.out.println(this.dbName + " DB Created Successfully.");
             System.out.println("db created?: " + myResult);
             
             // reset conn to Connect to dbName database
-            System.out.println("Connecting to " + dbName + " database...");
+            System.out.println("Connecting to " + this.dbName + " database...");
             conn =
-               DriverManager.getConnection(url + dbName, user, pw);
+               DriverManager.getConnection(this.url + this.dbName, this.user, this.pw);
             // prepare to Create db tables & schema in selected db
             s = conn.createStatement();
-            System.out.println("Creating tables in " + dbName);
+            System.out.println("Creating tables in " + this.dbName);
             // Declare variable to store sql statement to execute
             String sqlCreateTableSchema = "CREATE TABLE StudentsTbl " +
                     "(id INTEGER not NULL, " +
@@ -194,7 +194,7 @@ public class StudentList {
                     "PRIMARY KEY (id))";
             // Execute required statements to create tables
             s.executeUpdate(sqlCreateTableSchema);
-            System.out.println("Tables created in " + dbName);
+            System.out.println("Tables created in " + this.dbName);
             
             int count = 1;
             
@@ -238,13 +238,15 @@ public class StudentList {
         //  Continue asking the user until user presses cancel
         
         // Declare variable to store name entered
-        String name = " ";
+        String name = "";
         String [] n = new String[2];
         String first = "";
         String last = "";
-        
+        String msg = "";
         
         // create event loop to keep asking user for a name
+        // when student name found in db then display to user
+        // when user cancels dialog then exit loop
         while(name != null){
             // create an instance of JOptionPane to accept user input
             name = JOptionPane.showInputDialog(null, "Enter First & Last Name of Student to Find.", "Find Student in DB", JOptionPane.QUESTION_MESSAGE);
@@ -262,17 +264,51 @@ public class StudentList {
                 last = null;
             }
             
-            // tracer rounds
-            System.out.println("array n: " + Arrays.toString(n));
-            System.out.println("first name arr: " + first);
-            System.out.println("last name arr: " + last);
-            
-            
-            
-            
-        }
-        
-        
+            try {
+                // Load JDBC connection drivers
+                Class.forName(this.driver).newInstance();
+                System.out.println("2Driver Loaded...");
+
+                // Establish a connection
+                Connection conn =
+                   DriverManager.getConnection(this.url + this.dbName, this.user, this.pw);
+                System.out.println("2Database Connection Established...");
+
+                // Do something with the Connection
+                // Create Statements
+                Statement s = conn.createStatement();
+                
+                // Query Grades DB for Student name to find
+                resultSet = s.executeQuery("SELECT * FROM " + dbName + ".StudentsTbl "
+                    + "WHERE FirstName = '" + first + "' && LastName = '" + last + "';");
+                
+                // Loop through result set if name found in DB
+                while(resultSet.next()){
+                    // Create dialog message to display to user when name found
+                    msg = "Name: " + resultSet.getString("FirstName") 
+                            + " " + resultSet.getString("LastName") + " " 
+                            + "Avg: " + String.format("%1$,.2f", resultSet.getDouble("Average"))
+                            + " Status: " + resultSet.getString("Status");
+                    
+                    // Create an instance of a message dialog and display results to user when student found in db
+                    JOptionPane.showMessageDialog(null, msg, "Student Found in Grades DB", JOptionPane.INFORMATION_MESSAGE);
+                }
+                
+                // Close connection to DB
+                conn.close();
+                
+            } catch (SQLException ex) {
+                // handle any errors
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("SEVERE ERROR: " + Arrays.toString(ex.getStackTrace()));
+            } catch (InstantiationException | IllegalAccessException ex) {
+                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+            }   
+        }   
     }
     
     public void writeStudents(){
