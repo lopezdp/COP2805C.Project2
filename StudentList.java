@@ -31,6 +31,7 @@ public class StudentList {
     private final String dbName = "Grades";
     private final String url = "jdbc:mysql://localhost:3306/";
     private final String driver = "com.mysql.jdbc.Driver";
+    private Connection conn;
     private ResultSet resultSet;
     private List<Student> students;
     
@@ -153,18 +154,12 @@ public class StudentList {
     public void saveStudentsToDB(){
         // Start writing data in students array to db!!!!
         try {
-            // Load JDBC connection drivers
-            Class.forName(this.driver).newInstance();
-            System.out.println("Driver Loaded...");
-
-            // Establish a connection
-            Connection conn =
-               DriverManager.getConnection(this.url, this.user, this.pw);
-            System.out.println("Database Connection Established...");
+            // Call function to connect DB
+            connectDB(0);
 
             // Do something with the Connection
             // Create Statements
-            Statement s = conn.createStatement();
+            Statement s = this.conn.createStatement();
 
             // Execute a Statement & Create DB if it does not exist
             int myResult = s.executeUpdate("DROP DATABASE IF EXISTS " + this.dbName);
@@ -175,8 +170,9 @@ public class StudentList {
             
             // reset conn to Connect to dbName database
             System.out.println("Connecting to " + this.dbName + " database...");
-            conn =
-               DriverManager.getConnection(this.url + this.dbName, this.user, this.pw);
+            
+            connectDB(1);
+            
             // prepare to Create db tables & schema in selected db
             s = conn.createStatement();
             System.out.println("Creating tables in " + this.dbName);
@@ -196,8 +192,8 @@ public class StudentList {
             s.executeUpdate(sqlCreateTableSchema);
             System.out.println("Tables created in " + this.dbName);
             
+            // iteration count
             int count = 1;
-            
             // loop through each element in students array 
             // and insert data into students table
             for(Student student : this.students){
@@ -223,11 +219,6 @@ public class StudentList {
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("SEVERE ERROR: " + Arrays.toString(ex.getStackTrace()));
-        } catch (InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -256,6 +247,8 @@ public class StudentList {
             if(name != null){
                 n = name.split("\\s");
                 first = n[0];
+                if(n.length < 2)
+                    continue;
                 last = n[1];
             }
             else if(name == null){
@@ -265,14 +258,8 @@ public class StudentList {
             }
             
             try {
-                // Load JDBC connection drivers
-                Class.forName(this.driver).newInstance();
-                System.out.println("2Driver Loaded...");
-
-                // Establish a connection
-                Connection conn =
-                   DriverManager.getConnection(this.url + this.dbName, this.user, this.pw);
-                System.out.println("2Database Connection Established...");
+                // Connect to DB
+                connectDB(1);
 
                 // Do something with the Connection
                 // Create Statements
@@ -285,10 +272,10 @@ public class StudentList {
                 // Loop through result set if name found in DB
                 while(resultSet.next()){
                     // Create dialog message to display to user when name found
-                    msg = "Name: " + resultSet.getString("FirstName") 
+                    msg = "NAME: " + resultSet.getString("FirstName") 
                             + " " + resultSet.getString("LastName") + " " 
-                            + "Avg: " + String.format("%1$,.2f", resultSet.getDouble("Average"))
-                            + " Status: " + resultSet.getString("Status");
+                            + "AVG: " + String.format("%1$,.2f", resultSet.getDouble("Average"))
+                            + " STATUS: " + resultSet.getString("Status");
                     
                     // Create an instance of a message dialog and display results to user when student found in db
                     JOptionPane.showMessageDialog(null, msg, "Student Found in Grades DB", JOptionPane.INFORMATION_MESSAGE);
@@ -302,21 +289,43 @@ public class StudentList {
                 System.out.println("SQLException: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("VendorError: " + ex.getErrorCode());
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println("SEVERE ERROR: " + Arrays.toString(ex.getStackTrace()));
-            } catch (InstantiationException | IllegalAccessException ex) {
-                Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
             }   
         }   
     }
     
+    // Write contents of StudentsTbl in DB to a file (txt)
+    // Name    Grade1    Grade2    Grade3    Avg    LetterGrade    Status
     public void writeStudents(){
         
     }
     
     public void writeSortedStudents(){
         
+    }
+    
+    public Connection connectDB(int n){
+        try {
+            // Load JDBC connection drivers
+            Class.forName(this.driver).newInstance();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Driver Loaded...");
+
+        // Establish a connection
+        try {
+            if(n > 0)
+                this.conn = DriverManager.getConnection(this.url + this.dbName, this.user, this.pw);
+            else
+                this.conn = DriverManager.getConnection(this.url, this.user, this.pw);
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Database Connection Established...");
+        
+        return this.conn;
     }
     
     
