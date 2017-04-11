@@ -348,6 +348,53 @@ public class StudentList {
     }
     
     public void writeSortedStudents(){
+        // Instantiate new bufferedWriter with an outputstreamWriter
+        try (Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("sortedOutput.txt"), "utf-8"));){
+            
+            // instantiate and show save dialog window
+            int returnVal = this.chooser.showSaveDialog(null);
+            
+            if(returnVal == JFileChooser.APPROVE_OPTION){
+                // Store path to file
+                String path = this.chooser.getSelectedFile().getPath();
+                
+                // Store filename using path
+                File file = new File(path);
+
+                // Notify user of selected file
+                System.out.println("You have chosen to Create the following file: " + file);
+                
+                // Write header to output.txt file
+                w.write("Name \t \t Grade1  Grade2  Grade3  Average  Letter  Status");
+                w.write("\t \t \t \t \t \t \t \t \t " + " Grade \n");
+                
+                // connect to db to create a connect to execute statements
+                connectDB(1);
+                
+                // Do something with the Connection
+                // Create Statements
+                Statement s = this.conn.createStatement();
+                String sql;
+                
+                // Query Grades DB for Student name to find
+                this.resultSet = s.executeQuery("SELECT * FROM " + this.dbName + ".StudentsTbl ORDER BY Average DESC;");
+                
+                while(resultSet.next()){
+                    sql = (resultSet.getString("FirstName") + " " + resultSet.getString("LastName") 
+                            + " " + resultSet.getDouble("Grade1") + " \t " + resultSet.getDouble("Grade2") + " \t " + resultSet.getDouble("Grade3") 
+                            + " \t " + String.format("%1$,.2f", resultSet.getDouble("Average")) 
+                            + " \t " + resultSet.getString("LetterGrade") + " \t " + resultSet.getString("Status") + "\n");
+                    
+                    w.write(sql);
+                }
+                // Close db connection
+                this.conn.close(); 
+            }
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | SQLException ex) {
+            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
     

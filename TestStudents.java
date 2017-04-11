@@ -26,7 +26,7 @@ public class TestStudents {
         studentList.readStudents();
         studentList.saveStudentsToDB();
         studentList.writeStudents();
-        //studentList.writeSortedStudents();
+        studentList.writeSortedStudents();
         studentList.findStudent();
         
         
