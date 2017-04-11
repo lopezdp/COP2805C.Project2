@@ -175,7 +175,7 @@ public class StudentList {
             connectDB(1);
             
             // prepare to Create db tables & schema in selected db
-            s = conn.createStatement();
+            s = this.conn.createStatement();
             System.out.println("Creating tables in " + this.dbName);
             // Declare variable to store sql statement to execute
             String sqlCreateTableSchema = "CREATE TABLE StudentsTbl " +
@@ -214,7 +214,7 @@ public class StudentList {
             System.out.println("Records entered into Students Table Successfully...");
             
             // Close connection to DB
-            conn.close();
+            this.conn.close();
         } catch (SQLException ex) {
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
@@ -265,25 +265,25 @@ public class StudentList {
 
                 // Do something with the Connection
                 // Create Statements
-                Statement s = conn.createStatement();
+                Statement s = this.conn.createStatement();
                 
                 // Query Grades DB for Student name to find
-                resultSet = s.executeQuery("SELECT * FROM " + dbName + ".StudentsTbl "
+                this.resultSet = s.executeQuery("SELECT * FROM " + this.dbName + ".StudentsTbl "
                     + "WHERE FirstName = '" + first + "' && LastName = '" + last + "';");
                 
                 // Loop through result set if name found in DB
-                while(resultSet.next()){
+                while(this.resultSet.next()){
                     // Create dialog message to display to user when name found
-                    msg = "NAME: " + resultSet.getString("FirstName") 
-                            + " " + resultSet.getString("LastName") + " " 
-                            + "AVG: " + String.format("%1$,.2f", resultSet.getDouble("Average"))
-                            + " STATUS: " + resultSet.getString("Status");
+                    msg = "NAME: " + this.resultSet.getString("FirstName") 
+                            + " " + this.resultSet.getString("LastName") + " " 
+                            + "AVG: " + String.format("%1$,.2f", this.resultSet.getDouble("Average"))
+                            + " STATUS: " + this.resultSet.getString("Status");
                     
                     // Create an instance of a message dialog and display results to user when student found in db
                     JOptionPane.showMessageDialog(null, msg, "Student Found in Grades DB", JOptionPane.INFORMATION_MESSAGE);
                 }
                 // Close connection to DB
-                conn.close();
+                this.conn.close();
                 
             } catch (SQLException ex) {
                 // handle any errors
@@ -316,23 +316,33 @@ public class StudentList {
                 
                 // Write header to output.txt file
                 w.write("Name \t \t Grade1  Grade2  Grade3  Average  Letter  Status");
-                w.write("\t \t \t \t \t \t \t \t \t " + " Grade");
+                w.write("\t \t \t \t \t \t \t \t \t " + " Grade \n");
                 
+                // connect to db to create a connect to execute statements
+                connectDB(1);
                 
+                // Do something with the Connection
+                // Create Statements
+                Statement s = this.conn.createStatement();
+                String sql;
                 
+                // Query Grades DB for Student name to find
+                this.resultSet = s.executeQuery("SELECT * FROM " + this.dbName + ".StudentsTbl ");
                 
-                
-                
-                
-                
-                
-                
-                
-
+                while(resultSet.next()){
+                    sql = (resultSet.getString("FirstName") + " " + resultSet.getString("LastName") 
+                            + " " + resultSet.getDouble("Grade1") + " \t " + resultSet.getDouble("Grade2") + " \t " + resultSet.getDouble("Grade3") 
+                            + " \t " + String.format("%1$,.2f", resultSet.getDouble("Average")) 
+                            + " \t " + resultSet.getString("LetterGrade") + " \t " + resultSet.getString("Status") + "\n");
+                    
+                    w.write(sql);
+                }
+                // Close db connection
+                this.conn.close(); 
             }
         } catch (FileNotFoundException | UnsupportedEncodingException ex) {
             Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (IOException | SQLException ex) {
             Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
