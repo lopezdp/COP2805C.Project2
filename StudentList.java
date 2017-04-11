@@ -4,6 +4,7 @@
  * Proprietary & Confidential
  * Written by: Lopez <DavidPLopez@Live.com>
  */
+
 package teststudents;
 
 import java.util.*;
@@ -19,9 +20,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
- * @author MyDocs
+ * Student ID: 1001975600
+ * COP2805C Java Programming 2
+ * Spring - T Th 6:15 PM - 9:30 PM
+ * Project 2
+ * @author David P. Lopez
+ * 
+ * Plagiarism Statement: I certify that this assignment is my own work and 
+ * that I have not copied in part or whole or otherwise plagiarized the work
+ * of other students and/or persons.
  */
+
 public class StudentList {
     
     // Declare fields & variables
@@ -148,7 +157,6 @@ public class StudentList {
             }
             // Confirmation that data has been read from file and is now ready to be stored into db
             System.out.println("Contents of file are ready to be saved to database.");
-            
         }
     }
     
@@ -330,6 +338,7 @@ public class StudentList {
                 this.resultSet = s.executeQuery("SELECT * FROM " + this.dbName + ".StudentsTbl ");
                 
                 while(resultSet.next()){
+                    // Create a concatenated sql string to use in the write() method
                     sql = (resultSet.getString("FirstName") + " " + resultSet.getString("LastName") 
                             + " " + resultSet.getDouble("Grade1") + " \t " + resultSet.getDouble("Grade2") + " \t " + resultSet.getDouble("Grade3") 
                             + " \t " + String.format("%1$,.2f", resultSet.getDouble("Average")) 
@@ -380,6 +389,7 @@ public class StudentList {
                 this.resultSet = s.executeQuery("SELECT * FROM " + this.dbName + ".StudentsTbl ORDER BY Average DESC;");
                 
                 while(resultSet.next()){
+                    // Create a concatenated sql string to use in the write() method
                     sql = (resultSet.getString("FirstName") + " " + resultSet.getString("LastName") 
                             + " " + resultSet.getDouble("Grade1") + " \t " + resultSet.getDouble("Grade2") + " \t " + resultSet.getDouble("Grade3") 
                             + " \t " + String.format("%1$,.2f", resultSet.getDouble("Average")) 
@@ -394,8 +404,7 @@ public class StudentList {
             Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException | SQLException ex) {
             Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        } 
     }
     
     public Connection connectDB(int n){
