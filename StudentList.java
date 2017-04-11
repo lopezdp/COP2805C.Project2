@@ -31,6 +31,8 @@ public class StudentList {
     private final String dbName = "Grades";
     private final String url = "jdbc:mysql://localhost:3306/";
     private final String driver = "com.mysql.jdbc.Driver";
+    private JFileChooser chooser = new JFileChooser(); // Instantiate new chooser
+    private FileNameExtensionFilter filter;
     private Connection conn;
     private ResultSet resultSet;
     private List<Student> students;
@@ -50,20 +52,18 @@ public class StudentList {
     // FirstName | LastName 
     
     public void readStudents() throws FileNotFoundException{
-        // Create a new instance of a file chooser
-        JFileChooser chooser = new JFileChooser();
-        
+        // Create a new instance of a file chooser and 
         // Allow user to select only .txt files
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Select Only (.txt) files: ", "txt");
-        chooser.setFileFilter(filter);
+        this.filter = new FileNameExtensionFilter("Select Only (.txt) files: ", "txt");
+        this.chooser.setFileFilter(this.filter);
         
         // Display chooser dialog menu
-        int returnVal = chooser.showOpenDialog(null);
+        int returnVal = this.chooser.showOpenDialog(null);
         
         // Notify the user of the selected file & parse the file
         if(returnVal == JFileChooser.APPROVE_OPTION){
             // Store path to file
-            String path = chooser.getSelectedFile().getPath();
+            String path = this.chooser.getSelectedFile().getPath();
             
             // Store filename
             File file = new File(path);
@@ -148,6 +148,7 @@ public class StudentList {
             }
             // Confirmation that data has been read from file and is now ready to be stored into db
             System.out.println("Contents of file are ready to be saved to database.");
+            
         }
     }
     
@@ -248,6 +249,7 @@ public class StudentList {
                 n = name.split("\\s");
                 first = n[0];
                 if(n.length < 2)
+                    // Continue loop if input is not first && last name
                     continue;
                 last = n[1];
             }
@@ -280,7 +282,6 @@ public class StudentList {
                     // Create an instance of a message dialog and display results to user when student found in db
                     JOptionPane.showMessageDialog(null, msg, "Student Found in Grades DB", JOptionPane.INFORMATION_MESSAGE);
                 }
-                
                 // Close connection to DB
                 conn.close();
                 
@@ -290,13 +291,50 @@ public class StudentList {
                 System.out.println("SQLState: " + ex.getSQLState());
                 System.out.println("VendorError: " + ex.getErrorCode());
             }   
-        }   
+        }
+        System.out.println("Database Connection Closed.");
     }
     
     // Write contents of StudentsTbl in DB to a file (txt)
     // Name    Grade1    Grade2    Grade3    Avg    LetterGrade    Status
     public void writeStudents(){
-        
+        // Instantiate new bufferedWriter with an outputstreamWriter
+        try (Writer w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("output.txt"), "utf-8"));){
+            
+            // instantiate and show save dialog window
+            int returnVal = this.chooser.showSaveDialog(null);
+            
+            if(returnVal == JFileChooser.APPROVE_OPTION){
+                // Store path to file
+                String path = this.chooser.getSelectedFile().getPath();
+                
+                // Store filename using path
+                File file = new File(path);
+
+                // Notify user of selected file
+                System.out.println("You have chosen to Create the following file: " + file);
+                
+                // Write header to output.txt file
+                w.write("Name \t \t Grade1  Grade2  Grade3  Average  Letter  Status");
+                w.write("\t \t \t \t \t \t \t \t \t " + " Grade");
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+
+            }
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(StudentList.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void writeSortedStudents(){
@@ -326,8 +364,5 @@ public class StudentList {
         System.out.println("Database Connection Established...");
         
         return this.conn;
-    }
-    
-    
-    
+    }   
 }
