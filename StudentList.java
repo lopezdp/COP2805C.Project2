@@ -386,14 +386,14 @@ public class StudentList {
                 String sql;
                 
                 // Query Grades DB for Student name to find
-                this.resultSet = s.executeQuery("SELECT * FROM " + this.dbName + ".StudentsTbl ORDER BY Average DESC;");
+                this.resultSet = s.executeQuery("SELECT * FROM " + this.dbName + ".StudentsTbl ORDER BY Average ASC;");
                 
                 while(resultSet.next()){
                     // Create a concatenated sql string to use in the write() method
                     sql = (resultSet.getString("FirstName") + " " + resultSet.getString("LastName") 
                             + " " + resultSet.getDouble("Grade1") + " \t " + resultSet.getDouble("Grade2") + " \t " + resultSet.getDouble("Grade3") 
                             + " \t " + String.format("%1$,.2f", resultSet.getDouble("Average")) 
-                            + " \t " + resultSet.getString("LetterGrade") + " \t " + resultSet.getString("Status") + "\n");
+                            + " \t " + resultSet.getString("LetterGrade") + " \t  " + resultSet.getString("Status") + "\n");
                     
                     w.write(sql);
                 }
